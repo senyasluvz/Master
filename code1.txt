@@ -1,0 +1,33 @@
+library(dplyr)
+library(fixest)
+library(broom)
+library(ggplot2)
+
+# Assuming your dataset is named 'aviation_data'
+
+# Create a treatment indicator if it's not already defined
+# Treatment might already be defined as 1 or 0 based on Regulation_status
+
+# Check the data structure to ensure it's correct
+head(aviation_data)
+
+# Conduct Difference-in-Differences analysis
+# Using `Regulation_status` to define the treatment group
+# and `Country` and `Year` as fixed effects
+did_model <- feols(Accidents ~ Treatment * Country | Year + Country, data = aviation_data)
+
+# Summarize the results
+summary(did_model)
+
+# Tidy the model output (optional)
+tidy(did_model)
+
+# Visualization (Optional)
+ggplot(aviation_data, aes(x = Year, y = Accidents, color = Country)) +
+  geom_line() +
+  facet_wrap(~ Regulation_status) +  # To see the effect under different regulation statuses
+  geom_vline(xintercept = 2018, linetype = "dashed", color = "red") +  # Assuming 2018 is a key year
+  labs(title = "Effectiveness of Aviation Security by Country", 
+       x = "Year", 
+       y = "Number of Accidents") +
+  theme_minimal()

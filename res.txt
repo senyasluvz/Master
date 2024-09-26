@@ -1,0 +1,41 @@
+> # Check the data structure to ensure it's correct
+> head(aviation_data)
+# A tibble: 6 × 7
+  Country  Year Regulaion_area Regulation_status Treatment Accidents Post2018
+  <fct>   <dbl> <chr>                      <dbl> <fct>         <dbl>    <dbl>
+1 Spain    2013 Legislation                    0 0                 4        0
+2 Spain    2014 Legislation                    0 0                 3        0
+3 Spain    2015 Legislation                    1 0                 1        0
+4 Spain    2016 Legislation                    1 0                 2        0
+5 Spain    2017 Legislation                    1 0                 2        0
+6 Spain    2018 Legislation                    1 0                 3        1
+> # Summarize the results
+> summary(did_model)
+OLS estimation, Dep. Var.: Accidents
+Observations: 231
+Fixed-effects: Year: 11
+Standard-errors: Clustered (Year) 
+              Estimate Std. Error  t value  Pr(>|t|)    
+Treatment1   -1.636364   0.493396 -3.31654 0.0077929 ** 
+CountrySpain  0.727273   0.508376  1.43058 0.1830462    
+... 3 variables were removed because of collinearity (CountryIceland, Treatment1:CountryIceland and Treatment1:CountrySpain)
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 0.799449     Adj. R2: 0.652643
+                 Within R2: 0.604545
+> # Tidy the model output (optional)
+> tidy(did_model)
+# A tibble: 2 × 5
+  term         estimate std.error statistic p.value
+  <chr>           <dbl>     <dbl>     <dbl>   <dbl>
+1 Treatment1     -1.64      0.493     -3.32 0.00779
+2 CountrySpain    0.727     0.508      1.43 0.183  
+> # Visualization (Optional)
+> ggplot(aviation_data, aes(x = Year, y = Accidents, color = Country)) +
++   geom_line() +
++   facet_wrap(~ Regulation_status) +  # To see the effect under different regulation statuses
++   geom_vline(xintercept = 2018, linetype = "dashed", color = "red") +  # Assuming 2018 is a key year
++   labs(title = "Effectiveness of Aviation Security by Country", 
++        x = "Year", 
++        y = "Number of Accidents") +
++   theme_minimal()
